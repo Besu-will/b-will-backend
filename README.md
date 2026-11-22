@@ -66,7 +66,7 @@ Private seed material is not exposed through the API. Only the hash is published
 
 ## Testing status
 
-The database was exercised in a transaction using two existing test accounts. The tests placed four bets across two users, forced settlement, verified the seed commitment, reconciled winner payouts and wallet balances, and rolled back. A separate dead-round test checked that the full pot is credited to the virtual house with no payout. Admin authorization and private-table access were also checked. No test wagers or coin adjustments were retained.
+The database was exercised in a transaction using two existing test accounts. The tests placed four bets across two users, forced settlement, verified the seed commitment, reconciled winner payouts and wallet balances, and rolled back. A separate dead-round test checked that the full pot is credited to the virtual house with no payout. The V2 round lifecycle test verifies the betting cutoff, reveal phase, delayed seed disclosure, settlement, and player/house reconciliation inside a rolled-back transaction. Admin authorization and private-table access were also checked. No test wagers or Balance adjustments were retained.
 
 ## Deployment status
 
