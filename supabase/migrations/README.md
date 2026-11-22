@@ -18,5 +18,6 @@ The B-Will v2 database migrations were applied to the Supabase project reference
 | 20261122113439 | bw_v2_virtual_balance_requests |
 | 20261122113656 | bw_v2_balance_request_validation |
 | 20261122113848 | bw_v2_rls_query_performance |
+| 20261122114114 | bw_v2_host_dashboard_history |
 
 These migrations are additive. They do not drop or rewrite the legacy v1 tables. The SQL for the two new V2 round-engine migrations is stored in this directory under the exact applied version identifiers. Earlier migrations predate this source archive and are recorded here by version. Keep every future schema change as a versioned SQL file in this directory before applying it.
