@@ -10,6 +10,8 @@ B-Will is a virtual, non-monetary colour game. Game Balance has no cash value an
 - Players can cancel a placed bet before the 7-second betting cutoff; the full stake is returned and the cancelled row remains in the audit history.
 - Cancelled bets release their slot, are excluded from live bets and settlement, and cannot be cancelled after betting closes.
 - Authenticated players can retrieve their own paginated bet history, including cancelled bets.
+- Player-facing Deposit and Withdraw are Host-reviewed internal Game Balance requests only; there are no payments, cash deposits, payouts, or cash withdrawals.
+- Pending Withdraw requests reserve available Balance immediately. Approval deducts the reserved amount; rejection or player cancellation releases it.
 - Wallet balances and an auditable, append-only player ledger.
 - Secure random server seeds, SHA-256 commitment before betting, winner determined at reveal, and seed disclosed only after settlement.
 - Atomic settlement: a normal round distributes 90% of the total pot among winning stakes proportionally; the house receives 10%. If no one selected the winning colour, the round is dead and the house receives the full pot.
@@ -41,6 +43,11 @@ Settings are held in `private.bw_settings`.
 - `bw_place_bet(p_slot, p_color, p_stake)` — atomically validate and place a bet.
 - `bw_cancel_bet(p_bet_id)` — return a stake before betting closes and retain a cancellation audit record.
 - `bw_get_my_history(p_limit, p_before_id)` — return the signed-in player's paginated betting history.
+- `bw_submit_balance_request(p_type, p_amount, p_note)` — submit an internal Deposit or Withdraw request.
+- `bw_cancel_balance_request(p_request_id)` — cancel a pending player request and release any Withdraw reservation.
+- `bw_get_my_requests(p_limit, p_before_id)` — return the player's own request history.
+- `bw_admin_list_balance_requests(p_status, p_limit)` — Host-only request queue.
+- `bw_admin_review_balance_request(p_request_id, p_decision, p_reason)` — Host-only approval or rejection.
 - `bw_set_username(p_username)` — change the player's public display name.
 - `bw_is_admin()` — report whether the signed-in user is a host.
 - `bw_admin_dashboard()` — host-only player, round, and house overview.
@@ -53,6 +60,8 @@ The live-bet read model is `public.bw_live_bets`; it deliberately exposes displa
 Public tables: `bw_profiles`, `bw_wallets`, `bw_ledger`, `bw_rounds`, `bw_bets`.
 
 Private tables: `bw_settings`, `bw_admins`, `bw_house_accounts`, `bw_house_ledger`, `bw_round_secrets`.
+
+Additional V2 public table: `bw_balance_requests`. Player wallet rows track `balance`, `reserved_balance`, and the derived available Balance.
 
 Private seed material is not exposed through the API. Only the hash is published before a round; the seed is revealed in the settled round record.
 
@@ -69,10 +78,12 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122112209_bw_v2_ten_second_round_engine`
 - `20261122112444_bw_v2_cron_history_cleanup`
 - `20261122112846_bw_v2_bet_cancellation_and_history`
+- `20261122113439_bw_v2_virtual_balance_requests`
+- `20261122113656_bw_v2_balance_request_validation`
 
 ## Testing status
 
-The database was exercised in a transaction using two existing test accounts. The tests placed four bets across two users, forced settlement, verified the seed commitment, reconciled winner payouts and wallet balances, and rolled back. A separate dead-round test checked that the full pot is credited to the virtual house with no payout. The V2 round lifecycle test verifies the betting cutoff, reveal phase, delayed seed disclosure, settlement, and player/house reconciliation inside a rolled-back transaction. The cancellation/history test verifies full stake return, slot reuse, post-cutoff rejection, preservation of cancelled records, and cancellation-aware settlement, also inside a rolled-back transaction. Admin authorization and private-table access were also checked. No test wagers or Balance adjustments were retained.
+The database was exercised in a transaction using two existing test accounts. The tests placed four bets across two users, forced settlement, verified the seed commitment, reconciled winner payouts and wallet balances, and rolled back. A separate dead-round test checked that the full pot is credited to the virtual house with no payout. The V2 round lifecycle test verifies the betting cutoff, reveal phase, delayed seed disclosure, settlement, and player/house reconciliation inside a rolled-back transaction. The cancellation/history test verifies full stake return, slot reuse, post-cutoff rejection, preservation of cancelled records, and cancellation-aware settlement, also inside a rolled-back transaction. The Balance-request test verifies reservations, over-reservation and betting guards, player cancellation, Host rejection/approval, and ledger reconciliation; it also rolls back all test data. Admin authorization and private-table access were also checked. No test wagers or Balance adjustments were retained.
 
 ## Deployment status
 
