@@ -12,5 +12,13 @@ The B-Will v2 database migrations were applied to the Supabase project reference
 | 20261122062924 | bw_v2_preserve_bet_audit_on_account_deletion |
 | 20261122063008 | bw_v2_secure_live_bets_view |
 | 20261122063021 | bw_v2_explicit_private_api_denials |
+| 20261122112209 | bw_v2_ten_second_round_engine |
+| 20261122112444 | bw_v2_cron_history_cleanup |
+| 20261122112846 | bw_v2_bet_cancellation_and_history |
+| 20261122113439 | bw_v2_virtual_balance_requests |
+| 20261122113656 | bw_v2_balance_request_validation |
+| 20261122113848 | bw_v2_rls_query_performance |
+| 20261122114114 | bw_v2_host_dashboard_history |
+| 20261122114254 | bw_v2_signup_username |
 
-These migrations are additive. They do not drop or rewrite the legacy v1 tables. The original SQL has been applied to Supabase; this repository currently records the applied migration identifiers and the current backend contract. Keep future schema changes as versioned SQL files in this directory before applying them.
+These migrations are additive. They do not drop or rewrite the legacy v1 tables. The SQL for the two new V2 round-engine migrations is stored in this directory under the exact applied version identifiers. Earlier migrations predate this source archive and are recorded here by version. Keep every future schema change as a versioned SQL file in this directory before applying it.
