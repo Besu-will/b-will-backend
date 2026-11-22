@@ -6,6 +6,10 @@ begin;
 alter table private.bw_settings
   drop constraint if exists bw_settings_round_duration_seconds_check;
 
+update private.bw_settings
+set round_duration_seconds = 10
+where id = 1;
+
 alter table private.bw_settings
   add constraint bw_settings_round_duration_seconds_check
   check (round_duration_seconds = 10);
@@ -16,11 +20,10 @@ alter table public.bw_rounds
 -- Preserve historical records; give the existing live round a fresh V2 cycle.
 update public.bw_rounds
 set reveal_ends_at = case
-  when status = 'open' then clock_timestamp() + interval '10 seconds'
+  when status = 'open' then closes_at + interval '3 seconds'
   else coalesce(settled_at, closes_at) + interval '3 seconds'
 end
 where reveal_ends_at is null;
-
 alter table public.bw_rounds
   alter column reveal_ends_at set not null;
 
@@ -44,19 +47,16 @@ alter table public.bw_rounds
     (status = 'settled' and settled_at is not null and winner_color is not null and server_seed_reveal is not null)
   );
 
+update public.bw_rounds r
+set starts_at = t.started_at,
+    closes_at = t.started_at + interval '7 seconds',
+    reveal_ends_at = t.started_at + interval '10 seconds'
+from (select clock_timestamp() as started_at) t
+where r.status = 'open';
+
 alter table public.bw_rounds
   add constraint bw_rounds_reveal_time_check
   check (reveal_ends_at > closes_at);
-
-update private.bw_settings
-set round_duration_seconds = 10
-where id = 1;
-
-update public.bw_rounds
-set starts_at = clock_timestamp(),
-    closes_at = clock_timestamp() + interval '7 seconds',
-    reveal_ends_at = clock_timestamp() + interval '10 seconds'
-where status = 'open';
 
 create or replace function private.bw_begin_reveal(p_round_id bigint)
 returns void
