@@ -1,6 +1,6 @@
 # B-Will v2 backend
 
-B-Will is a virtual-coin colour game. Coins have no cash value and cannot be purchased, transferred, withdrawn, or redeemed. The backend is Supabase PostgreSQL.
+B-Will is a virtual, non-monetary colour game. Game Balance has no cash value and cannot be purchased, transferred, withdrawn, or redeemed. The backend is Supabase PostgreSQL.
 
 ## Current implementation
 
@@ -8,21 +8,23 @@ B-Will is a virtual-coin colour game. Coins have no cash value and cannot be pur
 - Server-authoritative rounds with three equally likely outcomes: green, orange, blue.
 - Two bet slots per player per round.
 - Wallet balances and an auditable, append-only player ledger.
-- Secure random server seeds, SHA-256 commit before betting, reveal after settlement.
+- Secure random server seeds, SHA-256 commitment before betting, winner determined at reveal, and seed disclosed only after settlement.
 - Atomic settlement: a normal round distributes 90% of the total pot among winning stakes proportionally; the house receives 10%. If no one selected the winning colour, the round is dead and the house receives the full pot.
 - Row-level security on all v2 public and private tables; the live-bets view uses invoker permissions and exposes only public activity fields, never account IDs.
 - Bet audit rows and display-name snapshots survive account deletion.
-- Admin-only virtual coin adjustments with a required reason.
+- Host-only Game Balance adjustments with a required reason.
+- Server-controlled 10-second rounds: 7 seconds for betting, then 3 seconds for reveal and settlement.
+- Supabase Cron advances the round engine every second; a daily cleanup job bounds scheduler run-history storage.
 - PostgreSQL cron job `bw-round-advance` runs every minute. Authenticated clients also request the current state; database locks make round advancement idempotent.
 
 ## Defaults
 
 | Setting | Value |
 |---|---:|
-| Starting balance | 1,000 virtual coins |
+| Starting balance | 1,000 Game Balance |
 | Minimum stake | 5 |
 | Maximum stake | 10,000 |
-| Round duration | 60 seconds |
+| Round duration | 10 seconds total (7 betting + 3 reveal) |
 | Normal house share | 10% |
 | Player slots | 2 |
 
@@ -37,7 +39,7 @@ Settings are held in `private.bw_settings`.
 - `bw_set_username(p_username)` — change the player's public display name.
 - `bw_is_admin()` — report whether the signed-in user is a host.
 - `bw_admin_dashboard()` — host-only player, round, and house overview.
-- `bw_admin_adjust(p_user_id, p_amount, p_reason)` — host-only coin adjustment.
+- `bw_admin_adjust(p_user_id, p_amount, p_reason)` — host-only Game Balance adjustment.
 
 The live-bet read model is `public.bw_live_bets`; it deliberately exposes display names, selected colours, stakes and slots, but not account IDs.
 
@@ -59,6 +61,8 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122062924_bw_v2_preserve_bet_audit_on_account_deletion`
 - `20261122063008_bw_v2_secure_live_bets_view`
 - `20261122063021_bw_v2_explicit_private_api_denials`
+- `20261122112209_bw_v2_ten_second_round_engine`
+- `20261122112444_bw_v2_cron_history_cleanup`
 
 ## Testing status
 
