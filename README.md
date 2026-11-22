@@ -53,6 +53,7 @@ Settings are held in `private.bw_settings`.
 - `bw_is_admin()` — report whether the signed-in user is a host.
 - `bw_admin_dashboard()` — host-only player, round, and house overview.
 - `bw_admin_adjust(p_user_id, p_amount, p_reason)` — host-only Game Balance adjustment.
+- `bw_get_win_leaderboard(p_start_at, p_end_at, p_limit)` — authenticated, time-windowed leaderboard ranked by each player's count of winning bets (not profit or stake); returns display names only.
 
 The live-bet read model is `public.bw_live_bets`; it deliberately exposes display names, selected colours, stakes and slots, but not account IDs.
 
@@ -84,6 +85,7 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122113848_bw_v2_rls_query_performance`
 - `20261122114114_bw_v2_host_dashboard_history`
 - `20261122114254_bw_v2_signup_username`
+- `20261122190000_bw_v2_win_count_leaderboard`
 
 ## Testing status
 
