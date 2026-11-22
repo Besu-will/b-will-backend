@@ -49,7 +49,7 @@ Settings are held in `private.bw_settings`.
 - `bw_admin_list_balance_requests(p_status, p_limit)` — Host-only request queue.
 - `bw_admin_review_balance_request(p_request_id, p_decision, p_reason)` — Host-only approval or rejection.
 - `bw_admin_history(p_limit)` — Host-only rounds, bets, Balance ledger, and request history.
-- `bw_set_username(p_username)` — change the player's public display name.
+- Signup usernames are read from validated authentication metadata and are not editable after account creation.
 - `bw_is_admin()` — report whether the signed-in user is a host.
 - `bw_admin_dashboard()` — host-only player, round, and house overview.
 - `bw_admin_adjust(p_user_id, p_amount, p_reason)` — host-only Game Balance adjustment.
