@@ -10,7 +10,8 @@ B-Will is a virtual-coin colour game. Coins have no cash value and cannot be pur
 - Wallet balances and an auditable, append-only player ledger.
 - Secure random server seeds, SHA-256 commit before betting, reveal after settlement.
 - Atomic settlement: a normal round distributes 90% of the total pot among winning stakes proportionally; the house receives 10%. If no one selected the winning colour, the round is dead and the house receives the full pot.
-- Row-level security on all v2 public and private tables.
+- Row-level security on all v2 public and private tables; the live-bets view uses invoker permissions and exposes only public activity fields, never account IDs.
+- Bet audit rows and display-name snapshots survive account deletion.
 - Admin-only virtual coin adjustments with a required reason.
 - PostgreSQL cron job `bw-round-advance` runs every minute. Authenticated clients also request the current state; database locks make round advancement idempotent.
 
@@ -55,10 +56,13 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122062147_enable_pg_cron_for_round_scheduler`
 - `20261122062233_bw_v2_server_round_scheduler`
 - `20261122062259_bw_v2_admin_dashboard_rpcs`
+- `20261122062924_bw_v2_preserve_bet_audit_on_account_deletion`
+- `20261122063008_bw_v2_secure_live_bets_view`
+- `20261122063021_bw_v2_explicit_private_api_denials`
 
 ## Testing status
 
-The database was exercised in a transaction using two existing test accounts. The test placed four bets across two users, forced the round to expire, settled it, verified the seed commitment, checked that all winner payouts summed to the payout pool, checked wallet conservation, and rolled back the test transaction. No test bets or rounds were retained.
+The database was exercised in a transaction using two existing test accounts. The tests placed four bets across two users, forced settlement, verified the seed commitment, reconciled winner payouts and wallet balances, and rolled back. A separate dead-round test checked that the full pot is credited to the virtual house with no payout. Admin authorization and private-table access were also checked. No test wagers or coin adjustments were retained.
 
 ## Deployment status
 
