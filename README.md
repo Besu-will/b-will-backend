@@ -61,7 +61,7 @@ Public tables: `bw_profiles`, `bw_wallets`, `bw_ledger`, `bw_rounds`, `bw_bets`.
 
 Private tables: `bw_settings`, `bw_admins`, `bw_house_accounts`, `bw_house_ledger`, `bw_round_secrets`.
 
-Additional V2 public table: `bw_balance_requests`. Player wallet rows track `balance`, `reserved_balance`, and the derived available Balance.
+Additional V2 public table: `bw_balance_requests`. Player wallet rows track `balance`, `reserved_balance`, and the derived available Balance. V2 read policies use init-plan-friendly auth checks and the request table exposes one combined owner/Host read policy.
 
 Private seed material is not exposed through the API. Only the hash is published before a round; the seed is revealed in the settled round record.
 
@@ -80,6 +80,7 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122112846_bw_v2_bet_cancellation_and_history`
 - `20261122113439_bw_v2_virtual_balance_requests`
 - `20261122113656_bw_v2_balance_request_validation`
+- `20261122113848_bw_v2_rls_query_performance`
 
 ## Testing status
 
