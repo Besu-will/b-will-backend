@@ -83,6 +83,7 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122113656_bw_v2_balance_request_validation`
 - `20261122113848_bw_v2_rls_query_performance`
 - `20261122114114_bw_v2_host_dashboard_history`
+- `20261122114254_bw_v2_signup_username`
 
 ## Testing status
 
