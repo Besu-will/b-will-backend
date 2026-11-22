@@ -36,8 +36,18 @@ begin
   if v_user is null then raise exception 'A test player with at least 12 Balance is required'; end if;
   perform set_config('request.jwt.claim.sub',v_user::text,true);
 
+  -- If the scheduler is between phases, finish that reveal inside this rollback-only
+  -- transaction so the test can safely use the next open round.
+  perform private.bw_advance_round();
   select id into v_round_id from public.bw_rounds where status='open';
-  if v_round_id is null then raise exception 'An open round is required'; end if;
+  if v_round_id is null then
+    update public.bw_rounds
+    set reveal_ends_at=clock_timestamp()-interval '1 second'
+    where status='revealing';
+    perform private.bw_advance_round();
+    select id into v_round_id from public.bw_rounds where status='open';
+  end if;
+  if v_round_id is null then raise exception 'Unable to prepare an open test round'; end if;
 
   select balance into v_before_balance from public.bw_wallets where user_id=v_user;
   select balance into v_before_house from private.bw_house_accounts where id=1;
