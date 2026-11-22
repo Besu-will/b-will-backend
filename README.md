@@ -48,6 +48,7 @@ Settings are held in `private.bw_settings`.
 - `bw_get_my_requests(p_limit, p_before_id)` — return the player's own request history.
 - `bw_admin_list_balance_requests(p_status, p_limit)` — Host-only request queue.
 - `bw_admin_review_balance_request(p_request_id, p_decision, p_reason)` — Host-only approval or rejection.
+- `bw_admin_history(p_limit)` — Host-only rounds, bets, Balance ledger, and request history.
 - `bw_set_username(p_username)` — change the player's public display name.
 - `bw_is_admin()` — report whether the signed-in user is a host.
 - `bw_admin_dashboard()` — host-only player, round, and house overview.
@@ -61,7 +62,7 @@ Public tables: `bw_profiles`, `bw_wallets`, `bw_ledger`, `bw_rounds`, `bw_bets`.
 
 Private tables: `bw_settings`, `bw_admins`, `bw_house_accounts`, `bw_house_ledger`, `bw_round_secrets`.
 
-Additional V2 public table: `bw_balance_requests`. Player wallet rows track `balance`, `reserved_balance`, and the derived available Balance. V2 read policies use init-plan-friendly auth checks and the request table exposes one combined owner/Host read policy.
+Additional V2 public table: `bw_balance_requests`. Player wallet rows track `balance`, `reserved_balance`, and the derived available Balance. V2 read policies use init-plan-friendly auth checks and the request table exposes one combined owner/Host read policy. The Host dashboard read model includes current round phase, active players, current betting activity, and pending request count.
 
 Private seed material is not exposed through the API. Only the hash is published before a round; the seed is revealed in the settled round record.
 
@@ -81,6 +82,7 @@ Private seed material is not exposed through the API. Only the hash is published
 - `20261122113439_bw_v2_virtual_balance_requests`
 - `20261122113656_bw_v2_balance_request_validation`
 - `20261122113848_bw_v2_rls_query_performance`
+- `20261122114114_bw_v2_host_dashboard_history`
 
 ## Testing status
 
